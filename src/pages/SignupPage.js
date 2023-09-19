@@ -13,6 +13,7 @@ import SignupForm from '../sections/auth/login/SignupForm';
 const StyledRoot = styled('div')(({ theme }) => ({
   [theme.breakpoints.up('md')]: {
     display: 'flex',
+    backgroundColor: 'gainsboro',
   },
 }));
 
@@ -24,6 +25,7 @@ const StyledContent = styled('div')(({ theme }) => ({
   justifyContent: 'center',
   flexDirection: 'column',
   padding: theme.spacing(12, 0),
+  backgroundColor: 'white',
 }));
 
 // ----------------------------------------------------------------------
@@ -36,7 +38,7 @@ export default function LoginPage() {
       </Helmet>
 
       <StyledRoot>
-        <Container maxWidth="sm">
+        <Container maxWidth="sm" style={{backgroundColor: 'white'}}>
           <StyledContent>
             <Typography variant="h4" gutterBottom style={{textAlign: 'center'}}>
               Welcome to Chowdhury's Blog
