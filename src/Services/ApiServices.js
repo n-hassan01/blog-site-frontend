@@ -6,6 +6,18 @@ export const signup = async (user) => {
     try{
         return await axios.post(`${usersUrl}signup/`, user)
     } catch (err) {
+        console.log(err.message);
+        
+        return err.message;
+    }
+}
+
+export const login = async (user) => {
+    try{
+        return await axios.post(`${usersUrl}login/`, user)
+    } catch(err) {
+        console.log(err.message);
+
         return err.message;
     }
 }

@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { LoadingButton } from '@mui/lab';
 import { IconButton, InputAdornment, Link, Stack, TextField, Typography } from '@mui/material';
 // components
+import { login } from '../../../Services/ApiServices';
+import removeCookie from "../../../Services/RemoveCookieService";
+import setCookie from "../../../Services/SetCookieService";
 import Iconify from '../../../components/iconify';
 
 // ----------------------------------------------------------------------
@@ -23,10 +26,28 @@ export default function LoginForm() {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const handleClick = () => {
+  const handleClick = async() => {
     console.log(user);
-    
-    navigate('/dashboard', { replace: true });
+    try {
+      const response = await login(user);
+
+      if (response.request.status === 200) {
+        alert(response.data.message);
+
+        const token = response.data.value;
+        const cookieName = 'jwt-token-cookie';
+
+        removeCookie(cookieName);
+
+        const cookie = setCookie(cookieName, token);
+        console.log(cookie);
+        navigate('/dashboard');
+      } else {
+        alert('Authentication failed! Try again');
+      }
+    } catch (err) {
+      alert('Authentication failed! Try again');
+    }
   };
 
   return (
