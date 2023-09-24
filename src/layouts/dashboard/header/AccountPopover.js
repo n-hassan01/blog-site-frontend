@@ -1,30 +1,18 @@
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 // @mui
+import { Avatar, Box, Divider, IconButton, MenuItem, Popover, Stack, Typography } from '@mui/material';
 import { alpha } from '@mui/material/styles';
-import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
 // mocks_
 import account from '../../../_mock/account';
+import removeCookie from "../../../Services/RemoveCookieService";
 
 // ----------------------------------------------------------------------
-
-const MENU_OPTIONS = [
-  {
-    label: 'Home',
-    icon: 'eva:home-fill',
-  },
-  {
-    label: 'Profile',
-    icon: 'eva:person-fill',
-  },
-  {
-    label: 'Settings',
-    icon: 'eva:settings-2-fill',
-  },
-];
 
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(null);
 
   const handleOpen = (event) => {
@@ -34,6 +22,48 @@ export default function AccountPopover() {
   const handleClose = () => {
     setOpen(null);
   };
+  
+  const openProfilePage = () => {
+    navigate('/dashboard/profile')
+    setOpen(null);
+  };
+
+  const openDashboardPage = () => {
+    navigate('/dashboard')
+    setOpen(null);
+  };
+
+  const openSettingsPage = () => {
+    navigate('/dashboard/settings')
+    setOpen(null);
+  };
+
+  const logout = () => {
+    removeCookie('jwt-token-cookie');
+    removeCookie('account-details-cookie');
+    removeCookie('email-cookie');
+    
+    setOpen(null);
+    navigate('/login')
+  };
+
+  const MENU_OPTIONS = [
+    {
+      label: 'Home',
+      icon: 'eva:home-fill',
+      method: openDashboardPage,
+    },
+    {
+      label: 'Profile',
+      icon: 'eva:person-fill',
+      method: openProfilePage,
+    },
+    {
+      label: 'Settings',
+      icon: 'eva:settings-2-fill',
+      method: openSettingsPage,
+    },
+  ];
 
   return (
     <>
@@ -89,7 +119,7 @@ export default function AccountPopover() {
 
         <Stack sx={{ p: 1 }}>
           {MENU_OPTIONS.map((option) => (
-            <MenuItem key={option.label} onClick={handleClose}>
+            <MenuItem key={option.label} onClick={option.method}>
               {option.label}
             </MenuItem>
           ))}
@@ -97,7 +127,7 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem onClick={handleClose} sx={{ m: 1 }}>
+        <MenuItem onClick={logout} sx={{ m: 1 }}>
           Logout
         </MenuItem>
       </Popover>

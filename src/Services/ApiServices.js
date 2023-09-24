@@ -21,3 +21,13 @@ export const login = async (user) => {
         return err.message;
     }
 }
+
+export const getAccountDetails = async (emailAddress) => {
+    try{
+        return await axios.get(`${usersUrl}account-info/${emailAddress}`)
+    } catch(err) {
+        console.log(err.message);
+
+        return err.message;
+    }
+}

@@ -8,6 +8,7 @@ import DashboardAppPage from './pages/DashboardAppPage';
 import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
 import ProductsPage from './pages/ProductsPage';
+import ProfilePage from './pages/ProfilePage';
 import SignupPage from './pages/SignupPage';
 import UserPage from './pages/UserPage';
 
@@ -24,6 +25,7 @@ export default function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
+        { path: 'profile', element: <ProfilePage /> },
       ],
     },
     {
