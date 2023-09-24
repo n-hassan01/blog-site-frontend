@@ -2,7 +2,6 @@ import { MDBCard, MDBCardBody, MDBCardImage, MDBCardText, MDBCol, MDBContainer, 
 import account from '../_mock/account';
 
 export default function EditButton() {
-  console.log('profile page');
   console.log(account);
   
   return (

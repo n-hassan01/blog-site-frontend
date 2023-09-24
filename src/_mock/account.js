@@ -18,9 +18,6 @@ const account = {
   gender: loggedAccuntDetails.gender,
 };
 
-console.log('acc');
-console.log(account);
-
 export default account;
 
 function updateAccountInfo() {
