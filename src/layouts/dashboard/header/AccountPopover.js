@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { Avatar, Box, Divider, IconButton, MenuItem, Popover, Stack, Typography } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 // mocks_
+import Logout from "../../../Services/LogoutService";
 import account from '../../../_mock/account';
-import removeCookie from "../../../Services/RemoveCookieService";
 
 // ----------------------------------------------------------------------
 
@@ -39,9 +39,10 @@ export default function AccountPopover() {
   };
 
   const logout = () => {
-    removeCookie('jwt-token-cookie');
-    removeCookie('account-details-cookie');
-    removeCookie('email-cookie');
+    // removeCookie('jwt-token-cookie');
+    // removeCookie('account-details-cookie');
+    // removeCookie('email-cookie');
+    Logout();
     
     setOpen(null);
     navigate('/login')

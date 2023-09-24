@@ -83,7 +83,7 @@ export default function EditButton() {
                           <td>{account.age}</td>
                         </tr>
                         <tr>
-                          <th scope="row">5</th>
+                          <th scope="row">6</th>
                           <td>Gender</td>
                           <td>{account.gender}</td>
                         </tr>
