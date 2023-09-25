@@ -2,7 +2,9 @@ import getCookie from '../Services/GetCookieService';
 // ----------------------------------------------------------------------
 
 const loggedAccunt = getCookie('account-details-cookie');
-const loggedAccuntDetails = JSON.parse(loggedAccunt);
+console.log(loggedAccunt);
+let loggedAccuntDetails = {};
+if (loggedAccunt) loggedAccuntDetails = JSON.parse(loggedAccunt);
 
 updateAccountInfo();
 
@@ -21,6 +23,8 @@ const account = {
 export default account;
 
 function updateAccountInfo() {
+  if (!loggedAccuntDetails) return;
+
   switch (loggedAccuntDetails.role) {
     case 1:
       loggedAccuntDetails.role = 'Admin';
@@ -35,21 +39,24 @@ function updateAccountInfo() {
   }
 
   loggedAccuntDetails.displayName = !loggedAccuntDetails.displayName ? 'User' : loggedAccuntDetails.displayName;
-  loggedAccuntDetails.photoURL = !loggedAccuntDetails.photoURL
-    ? '/assets/images/dp/avatar_male.jpg'
-    : loggedAccuntDetails.photoURL;
-  let defaultProfilePhotoUrl = '';
-  switch (loggedAccuntDetails.gender) {
-    case 'Male':
-      defaultProfilePhotoUrl = '/assets/images/dp/avatar_male.jpg';
-      break;
-    case 'Female':
-      defaultProfilePhotoUrl = '/assets/images/dp/avatar_female.jpg';
-      break;
-    default:
-      defaultProfilePhotoUrl = '/assets/images/dp/avatar_default.jpg';
-  }
-  if (!loggedAccuntDetails.photoURL) {
+
+  const dpLocation = '/assets/images/dp/';
+
+  if (loggedAccuntDetails.photoURL) {
+    loggedAccuntDetails.photoURL = `${dpLocation}${loggedAccuntDetails.photoURL}`;
+  } else {
+    let defaultProfilePhotoUrl = '';
+    switch (loggedAccuntDetails.gender) {
+      case 'Male':
+        defaultProfilePhotoUrl = `${dpLocation}avatar_male.jpg`;
+        break;
+      case 'Female':
+        defaultProfilePhotoUrl = `${dpLocation}avatar_female.jpg`;
+        break;
+      default:
+        defaultProfilePhotoUrl = `${dpLocation}avatar_default.jpg`;
+    }
+
     loggedAccuntDetails.photoURL = defaultProfilePhotoUrl;
   }
 }
