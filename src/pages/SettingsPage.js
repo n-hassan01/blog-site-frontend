@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Select from 'react-select';
 // component
-import { updateProfileDetails } from '../Services/ApiServices';
+import { comparePassword, updatePassword, updateProfileDetails, updateUsername } from '../Services/ApiServices';
 import { getAccountDetailsService } from '../Services/GetAccountsDetails';
 import Iconify from '../components/iconify';
 
@@ -15,49 +15,45 @@ export default function SettingsPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const accountDetails = await getAccountDetailsService(); 
-        setUser(accountDetails); 
+        const accountDetails = await getAccountDetailsService();
+        setUser(accountDetails);
       } catch (error) {
         console.error('Error fetching account details:', error);
       }
     }
 
-    fetchData(); 
+    fetchData();
   }, []);
 
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
+  const [oldPassword, setOldPassword] = useState('');
 
   const validatePhone = (phone) => phone.length >= 11;
 
+  const validateOldPassword = async (passwordInfo) => {
+    const response = await comparePassword(passwordInfo);
+    console.log(response.data.value);
+
+    return response.data.value;
+  };
+
+  const validatePassword = (password) => password.length >= 6;
+
   const options = [
-    { value: null, label: '--Gender--' },
     { value: 'Male', label: 'Male' },
     { value: 'Female', label: 'Female' },
     { value: 'Others', label: 'Others' },
     { value: 'Not to mention', label: 'Not to mention' },
   ];
 
-  // const selectedGenderIndex = 0;
-  // for (let index = 0; index < options.length; index=+1) {
-  //   // if(options[index].value === user.gender) 
-  //   // {
-  //   //   selectedGenderIndex = index
-  //   // }
-  //   console.log(selectedGenderIndex);
-  // }
-
   const initialSecurityDetails = {
-    password: user.profession,
+    password: '',
+    confirmPassword: '',
   };
   const [securityDetails, setSecurityDetails] = useState(initialSecurityDetails);
-
-  const initialAccountDetails = {
-    name: user.name,
-  };
-  const [accountDetails, setAccountDetails] = useState(initialAccountDetails);
 
   // on value change functions
   const onValueChangeProfileDetails = (e) => {
@@ -65,13 +61,16 @@ export default function SettingsPage() {
     else setUser({ ...user, gender: e.value });
   };
 
+  const onValueChangeOldPassword = (e) => {
+    setOldPassword(e.target.value);
+  };
+
   const onValueChangeSecurityDetails = (e) => {
-    if (e.target.name === 'password') setSecurityDetails({ ...securityDetails, [e.target.name]: e.target.value });
+    setSecurityDetails({ ...securityDetails, [e.target.name]: e.target.value });
   };
 
   const onValueChangeAccountDetails = (e) => {
     setUser({ ...user, name: e.target.value });
-    setAccountDetails({ ...accountDetails, [e.target.name]: e.target.value });
   };
 
   // on submit functions
@@ -98,28 +97,88 @@ export default function SettingsPage() {
         };
         const response = await updateProfileDetails(user.email, profileDetails);
 
-        if (response.status === 200) {
-          alert('Profile updated successfully!');
+        const alertMessage =
+          response.status === 200 ? 'Profile updated successfully!' : 'Service failed! Try again later';
 
-          navigate('/dashboard/profile', { replace: true });
-        } else {
-          console.log(response);
-          alert('Service failed! Try again later');
-        }
+        alert(alertMessage);
       } catch (err) {
         alert('Service failed! Try again later');
       }
+
+      navigate('/dashboard/profile', { replace: true });
     } else {
       setErrors(newErrors);
     }
   };
 
-  const updateSecurityDetails = () => {
-    console.log(securityDetails);
+  const updateSecurityDetails = async () => {
+    const { password, confirmPassword } = securityDetails;
+    const newErrors = {};
+
+    const oldPasswordInfo = {
+      email: user.email,
+      password: oldPassword,
+    };
+    const isValidOldPassword = await validateOldPassword(oldPasswordInfo);
+
+    // Validate oldPassword
+    if (!isValidOldPassword) {
+      newErrors.oldPassword = !oldPassword ? 'Password is required' : 'Wrong password';
+    }
+
+    // Validate password
+    if (!validatePassword(password)) {
+      newErrors.password = !password ? 'Password is required' : 'Password must be at least 6 characters long';
+    }
+
+    // Validate confirmPassword
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    if (Object.keys(newErrors).length === 0) {
+      try {
+        const newPasswordInfo = {
+          email: user.email,
+          newPassword: password,
+        };
+
+        const response = await updatePassword(newPasswordInfo);
+
+        const alertMessage = response.status === 200 ? response.data.message : 'Service failed! Try again later';
+
+        alert(alertMessage);
+      } catch (error) {
+        console.log(error.message);
+
+        alert('Service failed! Try again later');
+      }
+
+      navigate('/dashboard/profile', { replace: true });
+    } else {
+      setErrors(newErrors);
+    }
   };
 
-  const updateAccountDetails = () => {
-    console.log(accountDetails);
+  const updateAccountDetails = async () => {
+    try {
+      const usernameInfo = {
+        email: user.email,
+        name: user.name,
+      };
+
+      const response = await updateUsername(usernameInfo);
+
+      const alertMessage = response.status === 200 ? response.data.message : 'Service failed! Try again later';
+
+      alert(alertMessage);
+    } catch (err) {
+      console.log(err.message);
+
+      alert('Service failed! Try again later');
+    }
+
+    navigate('/dashboard/profile', { replace: true });
   };
 
   return (
@@ -152,7 +211,6 @@ export default function SettingsPage() {
             name="gender"
             placeholder="Gender"
             options={options}
-            // defaultValue={options[selectedGenderIndex]}
             onChange={(e) => onValueChangeProfileDetails(e)}
           />
         </Stack>
@@ -171,7 +229,7 @@ export default function SettingsPage() {
             name="oldPassword"
             label="Old Password"
             type={showPassword ? 'text' : 'password'}
-            onChange={(e) => onValueChangeSecurityDetails(e)}
+            onChange={(e) => onValueChangeOldPassword(e)}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -181,8 +239,8 @@ export default function SettingsPage() {
                 </InputAdornment>
               ),
             }}
-            error={!!errors.password}
-            helperText={errors.password}
+            error={!!errors.oldPassword}
+            helperText={errors.oldPassword}
           />
           <TextField
             autoComplete="new-password"
@@ -231,12 +289,7 @@ export default function SettingsPage() {
       </MDBAccordionItem>
       <MDBAccordionItem collapseId={3} headerTitle="Account Settings">
         <Stack spacing={3}>
-          <TextField
-            name="name"
-            label="Name"
-            value={user.name}
-            onChange={(e) => onValueChangeAccountDetails(e)}
-          />
+          <TextField name="name" label="Name" value={user.name} onChange={(e) => onValueChangeAccountDetails(e)} />
         </Stack>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
           <LoadingButton fullWidth size="large" type="submit" variant="contained" onClick={updateAccountDetails}>

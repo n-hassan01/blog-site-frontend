@@ -41,3 +41,33 @@ export const updateProfileDetails = async (emailAddress, profileDetails) => {
         return err.message;
     }
 }
+
+export const comparePassword = async (passwordInfo) => {
+    try{
+        return await axios.post(`${usersUrl}compare-password/`, passwordInfo)
+    } catch(err) {
+        console.log(err.message);
+
+        return err.message;
+    }
+}
+
+export const updatePassword = async (passwordInfo) => {
+    try{
+        return await axios.put(`${usersUrl}update-password/`, passwordInfo)
+    } catch(err) {
+        console.log(err.message);
+
+        return err.message;
+    }
+}
+
+export const updateUsername = async (usernameInfo) => {
+    try{
+        return await axios.put(`${usersUrl}update-username/`, usernameInfo)
+    } catch(err) {
+        console.log(err.message);
+
+        return err.message;
+    }
+}
