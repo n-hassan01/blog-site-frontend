@@ -1,5 +1,6 @@
-import Cookies from "js-cookie";
+import Cookies from 'js-cookie';
 
-const setCookie = (cookieName, cookieBody) => Cookies.set(cookieName, cookieBody, { expires: 1, secure: true });
+const setCookie = (cookieName, cookieBody) =>
+  Cookies.set(cookieName, cookieBody, { expires: 1, sameSite: 'None', secure: true });
 
 export default setCookie;

@@ -1,9 +1,33 @@
-import { MDBCard, MDBCardBody, MDBCardImage, MDBCardText, MDBCol, MDBContainer, MDBRow, MDBTypography } from 'mdb-react-ui-kit';
-import account from '../_mock/account';
+import {
+  MDBCard,
+  MDBCardBody,
+  MDBCardImage,
+  MDBCardText,
+  MDBCol,
+  MDBContainer,
+  MDBRow,
+  MDBTypography,
+} from 'mdb-react-ui-kit';
+import { useEffect, useState } from 'react';
+import { getAccountDetailsService } from '../Services/GetAccountsDetails';
 
-export default function EditButton() {
-  console.log(account);
-  
+export default function ProfilePage() {
+  const [profile, setProfile] = useState({});
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const accountDetails = await getAccountDetailsService(); // Call your async function here
+        setProfile(accountDetails); // Set the account details in the component's state
+      } catch (error) {
+        // Handle any errors that might occur during the async operation
+        console.error('Error fetching account details:', error);
+      }
+    }
+
+    fetchData(); // Call the async function when the component mounts
+  }, []);
+
   return (
     <div className="gradient-custom-2" style={{ backgroundColor: 'rgba(145, 158, 171, 0.12)' }}>
       <MDBContainer className="py-5 h-100">
@@ -16,7 +40,7 @@ export default function EditButton() {
               >
                 <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px' }}>
                   <MDBCardImage
-                    src={account.photoURL}
+                    src={profile.photoURL}
                     alt="No image found"
                     className="mt-4 mb-2 img-thumbnail"
                     fluid
@@ -24,8 +48,8 @@ export default function EditButton() {
                   />
                 </div>
                 <div className="ms-3" style={{ marginTop: '130px' }}>
-                  <MDBTypography tag="h5">{account.displayName}</MDBTypography>
-                  <MDBCardText>{account.role}</MDBCardText>
+                  <MDBTypography tag="h5">{profile.name}</MDBTypography>
+                  <MDBCardText>{profile.role}</MDBCardText>
                 </div>
               </div>
               <div className="p-4 text-black" style={{ backgroundColor: '#f8f9fa' }}>
@@ -60,32 +84,32 @@ export default function EditButton() {
                         <tr>
                           <th scope="row">1</th>
                           <td>Email</td>
-                          <td>{account.email}</td>
+                          <td>{profile.email}</td>
                         </tr>
                         <tr>
                           <th scope="row">2</th>
                           <td>Phone</td>
-                          <td>{account.phone}</td>
+                          <td>{profile.phone}</td>
                         </tr>
                         <tr>
                           <th scope="row">3</th>
                           <td>Profession</td>
-                          <td>{account.profession}</td>
+                          <td>{profile.profession}</td>
                         </tr>
                         <tr>
                           <th scope="row">4</th>
                           <td>Address</td>
-                          <td>{account.address}</td>
+                          <td>{profile.address}</td>
                         </tr>
                         <tr>
                           <th scope="row">5</th>
                           <td>Age</td>
-                          <td>{account.age}</td>
+                          <td>{profile.age}</td>
                         </tr>
                         <tr>
                           <th scope="row">6</th>
                           <td>Gender</td>
-                          <td>{account.gender}</td>
+                          <td>{profile.gender}</td>
                         </tr>
                       </tbody>
                     </table>

@@ -1,10 +1,10 @@
 import getCookie from '../Services/GetCookieService';
 // ----------------------------------------------------------------------
 
-const loggedAccunt = getCookie('account-details-cookie');
-console.log(loggedAccunt);
+// const loggedAccunt = getCookie('account-details-cookie');
+// console.log(loggedAccunt);
 let loggedAccuntDetails = {};
-if (loggedAccunt) loggedAccuntDetails = JSON.parse(loggedAccunt);
+// if (loggedAccunt) loggedAccuntDetails = JSON.parse(loggedAccunt);
 
 updateAccountInfo();
 
@@ -23,6 +23,11 @@ const account = {
 export default account;
 
 function updateAccountInfo() {
+  const loggedAccunt = getCookie('account-details-cookie');
+console.log(loggedAccunt);
+// let loggedAccuntDetails = {};
+if (loggedAccunt) loggedAccuntDetails = JSON.parse(loggedAccunt);
+
   if (!loggedAccuntDetails) return;
 
   switch (loggedAccuntDetails.role) {

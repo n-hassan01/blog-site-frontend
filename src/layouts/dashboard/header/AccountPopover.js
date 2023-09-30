@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 // @mui
 import { Avatar, Box, Divider, IconButton, MenuItem, Popover, Stack, Typography } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 // mocks_
 import Logout from "../../../Services/LogoutService";
-import account from '../../../_mock/account';
+// import account from '../../../_mock/account';
+import { getAccountDetailsService } from '../../../Services/GetAccountsDetails';
 
 // ----------------------------------------------------------------------
 
@@ -14,6 +15,22 @@ import account from '../../../_mock/account';
 export default function AccountPopover() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(null);
+
+  const [account, setAccount] = useState({});
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const accountDetails = await getAccountDetailsService(); // Call your async function here
+        setAccount(accountDetails); // Set the account details in the component's state
+      } catch (error) {
+        // Handle any errors that might occur during the async operation
+        console.error('Error fetching account details:', error);
+      }
+    }
+
+    fetchData(); // Call the async function when the component mounts
+  }, []);
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -39,9 +56,6 @@ export default function AccountPopover() {
   };
 
   const logout = () => {
-    // removeCookie('jwt-token-cookie');
-    // removeCookie('account-details-cookie');
-    // removeCookie('email-cookie');
     Logout();
     
     setOpen(null);
@@ -109,7 +123,7 @@ export default function AccountPopover() {
       >
         <Box sx={{ my: 1.5, px: 2.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {account.displayName}
+            {account.name}
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
             {account.email}

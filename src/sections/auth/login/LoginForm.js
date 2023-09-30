@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { LoadingButton } from '@mui/lab';
 import { IconButton, InputAdornment, Link, Stack, TextField, Typography } from '@mui/material';
 // components
-import { getAccountDetails, login } from '../../../Services/ApiServices';
+import { login } from '../../../Services/ApiServices';
 import removeCookie from "../../../Services/RemoveCookieService";
 import setCookie from "../../../Services/SetCookieService";
 import Iconify from '../../../components/iconify';
@@ -27,11 +27,8 @@ export default function LoginForm() {
   };
 
   const handleClick = async() => {
-    console.log(user);
     try {
       const response = await login(user);
-      const accountDetails = await getAccountDetails(user.email);
-      console.log('api call response');
 
       if (response.request.status === 200) {
         alert(response.data.message);
@@ -39,29 +36,15 @@ export default function LoginForm() {
         const token = response.data.value;
         const cookieName = 'jwt-token-cookie';
 
-        const account = {
-          displayName: accountDetails.data.name,
-          role: accountDetails.data.role,
-          profession: accountDetails.data.profession,
-          email: accountDetails.data.email,
-          photoURL: accountDetails.data.photoURL,
-          address: accountDetails.data.address,
-          phone: accountDetails.data.phone,
-          age: accountDetails.data.age,
-          gender: accountDetails.data.gender,
-        };
-
         removeCookie(cookieName);
-        removeCookie('account-details-cookie');
         removeCookie('email-cookie');
 
         const cookie = setCookie(cookieName, token);
         const emailCookie = setCookie('email-cookie', user.email);
-        const accountCookie = setCookie('account-details-cookie', JSON.stringify(account));
         
         console.log(cookie);
         console.log(emailCookie);
-        console.log(accountCookie);
+        
         navigate('/dashboard');
       } else {
         alert('Authentication failed! Try again');

@@ -31,3 +31,13 @@ export const getAccountDetails = async (emailAddress) => {
         return err.message;
     }
 }
+
+export const updateProfileDetails = async (emailAddress, profileDetails) => {
+    try{
+        return await axios.put(`${usersUrl}update/profile/${emailAddress}`, profileDetails)
+    } catch(err) {
+        console.log(err.message);
+
+        return err.message;
+    }
+}

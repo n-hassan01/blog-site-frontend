@@ -35,7 +35,7 @@ export default function SignupForm() {
     return emailRegex.test(email);
   };
 
-  const validatePassword = (password) => password.length >= 6; // You can adjust the minimum length as needed
+  const validatePassword = (password) => password.length >= 6; 
   const onValueChange = (e) => {
     if (e.target) setUser({ ...user, [e.target.name]: e.target.value });
     else setUser({ ...user, role: e.value });
