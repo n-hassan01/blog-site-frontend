@@ -1,11 +1,10 @@
 import { sentenceCase } from 'change-case';
 import { filter } from 'lodash';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 // @mui
 import {
   Avatar,
-  Button,
   Card,
   Checkbox,
   Container,
@@ -27,17 +26,18 @@ import Iconify from '../components/iconify';
 import Label from '../components/label';
 import Scrollbar from '../components/scrollbar';
 // sections
+import { updateUserStatus } from '../Services/ApiServices';
+import { getUsersDetailsService } from '../Services/GetAllUsersDetails';
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
-// mock
-import USERLIST from '../_mock/user';
+import AddUserDialog from '../sections/@dashboard/user/AddUserDialog';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name', alignRight: false },
-  { id: 'company', label: 'Company', alignRight: false },
+  { id: 'email', label: 'Email', alignRight: false },
   { id: 'role', label: 'Role', alignRight: false },
-  { id: 'isVerified', label: 'Verified', alignRight: false },
+  { id: 'address', label: 'Address', alignRight: false },
   { id: 'status', label: 'Status', alignRight: false },
   { id: '' },
 ];
@@ -88,12 +88,74 @@ export default function UserPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const handleOpenMenu = (event) => {
+  const [USERLIST, setUserList] = useState([]);
+
+  const [isDisableApprove, setIsDisableApprove] = useState(false);
+  
+  const [isDisableBan, setIsDisableBan] = useState(false);
+
+  const [selectedUserEmail, setSelectedUserEmail] = useState('');
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const usersDetails = await getUsersDetailsService();
+        setUserList(usersDetails);
+      } catch (error) {
+        console.error('Error fetching account details:', error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  const handleOpenMenu = (event, status, email) => {
+    console.log(email);
+    if (status === 'approved') setIsDisableApprove(true);
+    else setIsDisableApprove(false);
+    
+    if (status === 'banned') setIsDisableBan(true);
+    else setIsDisableBan(false);
+
+    setSelectedUserEmail(email);
+
     setOpen(event.currentTarget);
   };
 
   const handleCloseMenu = () => {
     setOpen(null);
+  };
+
+  const approveUser = async () => {
+    const body = {
+      status: 'approved',
+      email: selectedUserEmail,
+    };
+    console.log(body);
+
+    const response = await updateUserStatus(body);
+
+    const alertMessage = response.status === 200 ? response.data.message : 'Process failed ! Try again';
+    alert(alertMessage);
+
+    handleCloseMenu();
+    window.location.reload();
+  };
+
+  const banUser = async () => {
+    const body = {
+      status: 'banned',
+      email: selectedUserEmail,
+    };
+    console.log(body);
+
+    const response = await updateUserStatus(body);
+
+    const alertMessage = response.status === 200 ? response.data.message : 'Process failed ! Try again';
+    alert(alertMessage);
+
+    handleCloseMenu();
+    window.location.reload();
   };
 
   const handleRequestSort = (event, property) => {
@@ -155,11 +217,9 @@ export default function UserPage() {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            User
+            Users
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
-            New User
-          </Button>
+          <AddUserDialog />
         </Stack>
 
         <Card>
@@ -179,7 +239,7 @@ export default function UserPage() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, role, status, company, avatarUrl, isVerified } = row;
+                    const { id, name, role, status, email, address, photoURL } = row;
                     const selectedUser = selected.indexOf(name) !== -1;
 
                     return (
@@ -190,28 +250,61 @@ export default function UserPage() {
 
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={avatarUrl} />
+                            <Avatar alt={name} src={photoURL} />
                             <Typography variant="subtitle2" noWrap>
                               {name}
                             </Typography>
                           </Stack>
                         </TableCell>
 
-                        <TableCell align="left">{company}</TableCell>
+                        <TableCell align="left">{email}</TableCell>
 
                         <TableCell align="left">{role}</TableCell>
 
-                        <TableCell align="left">{isVerified ? 'Yes' : 'No'}</TableCell>
+                        <TableCell align="left">{address}</TableCell>
 
                         <TableCell align="left">
-                          <Label color={(status === 'banned' && 'error') || 'success'}>{sentenceCase(status)}</Label>
+                          <Label
+                            color={(status === 'banned' && 'error') || (status === 'pending' && 'warning') || 'success'}
+                          >
+                            {sentenceCase(status)}
+                          </Label>
                         </TableCell>
 
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={handleOpenMenu}>
+                          <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, status, email)}>
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
+
+                        <Popover
+                          open={Boolean(open)}
+                          anchorEl={open}
+                          onClose={handleCloseMenu}
+                          anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+                          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                          PaperProps={{
+                            sx: {
+                              p: 1,
+                              width: 140,
+                              '& .MuiMenuItem-root': {
+                                px: 1,
+                                typography: 'body2',
+                                borderRadius: 0.75,
+                              },
+                            },
+                          }}
+                        >
+                          <MenuItem sx={{ color: 'success.main' }} disabled={isDisableApprove} onClick={approveUser}>
+                            <Iconify icon={'mdi:approve'} sx={{ mr: 2 }} />
+                            Appoved
+                          </MenuItem>
+
+                          <MenuItem sx={{ color: 'error.main' }} disabled={isDisableBan} onClick={banUser}>
+                            <Iconify icon={'mdi:ban'} sx={{ mr: 2 }} />
+                            Banned
+                          </MenuItem>
+                        </Popover>
                       </TableRow>
                     );
                   })}
@@ -261,7 +354,7 @@ export default function UserPage() {
         </Card>
       </Container>
 
-      <Popover
+      {/* <Popover
         open={Boolean(open)}
         anchorEl={open}
         onClose={handleCloseMenu}
@@ -288,7 +381,7 @@ export default function UserPage() {
           <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
           Delete
         </MenuItem>
-      </Popover>
+      </Popover> */}
     </>
   );
 }

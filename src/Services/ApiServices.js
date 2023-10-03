@@ -71,3 +71,23 @@ export const updateUsername = async (usernameInfo) => {
         return err.message;
     }
 }
+
+export const getUsersDetails = async () => {
+    try{
+        return await axios.get(`${usersUrl}users/`)
+    } catch(err) {
+        console.log(err.message);
+
+        return err.message;
+    }
+}
+
+export const updateUserStatus = async (bodyInfo) => {
+    try{
+        return await axios.put(`${usersUrl}update-status/`, bodyInfo)
+    } catch(err) {
+        console.log(err.message);
+
+        return err.message;
+    }
+}
