@@ -34,6 +34,7 @@ export const getAccountDetails = async (emailAddress) => {
 
 export const updateProfileDetails = async (emailAddress, profileDetails) => {
     try{
+        console.log(emailAddress);
         return await axios.put(`${usersUrl}update/profile/${emailAddress}`, profileDetails)
     } catch(err) {
         console.log(err.message);

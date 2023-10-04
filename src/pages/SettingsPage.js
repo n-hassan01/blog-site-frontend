@@ -75,25 +75,25 @@ export default function SettingsPage() {
 
   // on submit functions
   const submitProfileDetails = async () => {
-    console.log(user);
     // form validation
     const { phone } = user;
     const newErrors = {};
 
     // Validate phone
-    if (!validatePhone(phone)) {
+    if (phone && !validatePhone(phone)) {
       newErrors.phone = 'Invalid phone number';
     }
 
     // Check if there are any errors
     if (Object.keys(newErrors).length === 0) {
+      console.log(user);
       try {
         const profileDetails = {
-          profession: user.profession,
-          address: user.address,
-          phone: user.phone,
-          age: user.age,
-          gender: user.gender,
+          profession: user.profession ? user.profession : '',
+          address: user.address ? user.address : '',
+          phone: user.phone ? user.phone : '',
+          age: user.age ? user.age : '',
+          gender: user.gender ? user.gender : '',
         };
         const response = await updateProfileDetails(user.email, profileDetails);
 
@@ -179,6 +179,7 @@ export default function SettingsPage() {
     }
 
     navigate('/dashboard/profile', { replace: true });
+    window.location.reload();
   };
 
   return (

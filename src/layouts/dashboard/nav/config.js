@@ -33,7 +33,7 @@ const navConfig = [
   },
   {
     title: 'contact',
-    path: '/404',
+    path: '/dashboard/contact',
     icon: icon('ic_contact'),
   },
 ];

@@ -3,6 +3,7 @@ import getCookie from "./GetCookieService";
 
 
 export const getAccountDetailsService = async () => {
+  console.log(getCookie('email-cookie'));
   const response = await getAccountDetails(getCookie('email-cookie'));
   
   updateAccountInfo(response);

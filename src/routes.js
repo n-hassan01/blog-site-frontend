@@ -4,6 +4,7 @@ import DashboardLayout from './layouts/dashboard';
 import SimpleLayout from './layouts/simple';
 //
 import BlogPage from './pages/BlogPage';
+import ContactPage from './pages/ContactPage';
 import DashboardAppPage from './pages/DashboardAppPage';
 import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
@@ -28,6 +29,7 @@ export default function Router() {
         { path: 'blog', element: <BlogPage /> },
         { path: 'profile', element: <ProfilePage /> },
         { path: 'settings', element: <SettingsPage /> },
+        { path: 'contact', element: <ContactPage /> },
       ],
     },
     {

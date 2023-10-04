@@ -68,7 +68,7 @@ function applySortFilter(array, comparator, query) {
     return a[1] - b[1];
   });
   if (query) {
-    return filter(array, (_user) => _user.name.toLowerCase().indexOf(query.toLowerCase()) !== -1);
+    return filter(array, (_user) => _user.email.toLowerCase().indexOf(query.toLowerCase()) !== -1);
   }
   return stabilizedThis.map((el) => el[0]);
 }
@@ -110,7 +110,6 @@ export default function UserPage() {
   }, []);
 
   const handleOpenMenu = (event, status, email) => {
-    console.log(email);
     if (status === 'approved') setIsDisableApprove(true);
     else setIsDisableApprove(false);
     
@@ -131,7 +130,6 @@ export default function UserPage() {
       status: 'approved',
       email: selectedUserEmail,
     };
-    console.log(body);
 
     const response = await updateUserStatus(body);
 
@@ -147,7 +145,6 @@ export default function UserPage() {
       status: 'banned',
       email: selectedUserEmail,
     };
-    console.log(body);
 
     const response = await updateUserStatus(body);
 
@@ -166,7 +163,7 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = USERLIST.map((n) => n.name);
+      const newSelecteds = USERLIST.map((n) => n.email);
       setSelected(newSelecteds);
       return;
     }
@@ -240,12 +237,12 @@ export default function UserPage() {
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
                     const { id, name, role, status, email, address, photoURL } = row;
-                    const selectedUser = selected.indexOf(name) !== -1;
+                    const selectedUser = selected.indexOf(email) !== -1;
 
                     return (
                       <TableRow hover key={id} tabIndex={-1} role="checkbox" selected={selectedUser}>
                         <TableCell padding="checkbox">
-                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, name)} />
+                          <Checkbox checked={selectedUser} onChange={(event) => handleClick(event, email)} />
                         </TableCell>
 
                         <TableCell component="th" scope="row" padding="none">
@@ -353,35 +350,6 @@ export default function UserPage() {
           />
         </Card>
       </Container>
-
-      {/* <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 1,
-            width: 140,
-            '& .MuiMenuItem-root': {
-              px: 1,
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        <MenuItem>
-          <Iconify icon={'eva:edit-fill'} sx={{ mr: 2 }} />
-          Edit
-        </MenuItem>
-
-        <MenuItem sx={{ color: 'error.main' }}>
-          <Iconify icon={'eva:trash-2-outline'} sx={{ mr: 2 }} />
-          Delete
-        </MenuItem>
-      </Popover> */}
     </>
   );
 }
