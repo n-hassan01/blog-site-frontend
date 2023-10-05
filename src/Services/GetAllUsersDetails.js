@@ -28,8 +28,8 @@ function updateAccountInfo(response) {
 
   const dpLocation = '/assets/images/dp/';
 
-  if (response.photoURL) {
-    response.photoURL = `${dpLocation}${response.photoURL}`;
+  if (response.dpurl) {
+    response.dpurl = `${dpLocation}${response.dpurl}`;
   } else {
     let defaultProfilePhotoUrl = '';
     switch (response.gender) {
@@ -43,7 +43,7 @@ function updateAccountInfo(response) {
         defaultProfilePhotoUrl = `${dpLocation}avatar_default.jpg`;
     }
 
-    response.photoURL = defaultProfilePhotoUrl;
+    response.dpurl = defaultProfilePhotoUrl;
   }
 
   // eslint-disable-next-line consistent-return

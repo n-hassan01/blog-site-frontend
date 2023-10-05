@@ -31,6 +31,7 @@ export default function AccountPopover() {
 
     fetchData(); // Call the async function when the component mounts
   }, []);
+  console.log(account);
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -99,7 +100,7 @@ export default function AccountPopover() {
           }),
         }}
       >
-        <Avatar src={account.photoURL} alt="photoURL" />
+        <Avatar src={account.dpurl} alt="display photo" />
       </IconButton>
 
       <Popover

@@ -9,7 +9,12 @@ import {
   MDBTypography,
 } from 'mdb-react-ui-kit';
 import { useEffect, useState } from 'react';
+import { uploadProfilePhoto } from '../Services/ApiServices';
 import { getAccountDetailsService } from '../Services/GetAccountsDetails';
+// components
+import Iconify from '../components/iconify';
+// external css
+import '../_css/ProfilePage.css';
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState({});
@@ -17,16 +22,33 @@ export default function ProfilePage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const accountDetails = await getAccountDetailsService(); // Call your async function here
-        setProfile(accountDetails); // Set the account details in the component's state
+        const accountDetails = await getAccountDetailsService();
+        setProfile(accountDetails);
       } catch (error) {
-        // Handle any errors that might occur during the async operation
         console.error('Error fetching account details:', error);
       }
     }
 
-    fetchData(); // Call the async function when the component mounts
+    fetchData();
   }, []);
+
+  const uplodPhoto = async (event) => {
+    const selectedFile = event.target.files[0]; 
+
+    if (selectedFile) {
+      console.log('Selected file:', selectedFile);
+
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      const response = await uploadProfilePhoto(profile.email, formData);
+
+      const alertMessage = response.status === 200 ? response.data.message : 'Upload failed! Try again';
+
+      alert(alertMessage);
+      // window.location.reload();
+    }
+  };
 
   return (
     <div className="gradient-custom-2" style={{ backgroundColor: 'rgba(145, 158, 171, 0.12)' }}>
@@ -38,14 +60,36 @@ export default function ProfilePage() {
                 className="rounded-top text-white d-flex flex-row"
                 style={{ backgroundColor: 'darkcyan', height: '200px' }}
               >
-                <div className="ms-4 mt-5 d-flex flex-column" style={{ width: '150px' }}>
+                <div className="ms-4 mt-5 d-flex flex-column" id="container" style={{ width: '150px' }}>
                   <MDBCardImage
-                    src={profile.photoURL}
+                    src={profile.dpurl}
                     alt="No image found"
                     className="mt-4 mb-2 img-thumbnail"
+                    id="image"
                     fluid
-                    style={{ width: '150px', zIndex: '1' }}
+                    style={{ width: '150px', zIndex: '1', maxHeight: '155px' }}
                   />
+                  {/* <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    data-mdb-ripple-color="dark"
+                    style={{ zIndex: 1 }}
+                    onClick={uplodPhoto}
+                  >
+                    <input type="file" style={{ display: 'none' }} onChange={uplodPhoto} />
+                    <Iconify icon={'mdi:camera'} className="icon" />
+                    Upload Photo
+                  </button> */}
+                  <label className="btn btn-outline-secondary" style={{ zIndex: 1 }} htmlFor='fileInput'>
+                    <input
+                      type="file"
+                      style={{ display: 'none' }}
+                      id="fileInput" 
+                      onChange={e => uplodPhoto(e)}
+                    />
+                    <Iconify icon={'mdi:camera'} className="icon" />
+                    Upload Photo
+                  </label>
                 </div>
                 <div className="ms-3" style={{ marginTop: '130px' }}>
                   <MDBTypography tag="h5">{profile.name}</MDBTypography>

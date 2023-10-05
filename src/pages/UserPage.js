@@ -100,6 +100,7 @@ export default function UserPage() {
     async function fetchData() {
       try {
         const usersDetails = await getUsersDetailsService();
+        console.log(usersDetails);
         setUserList(usersDetails);
       } catch (error) {
         console.error('Error fetching account details:', error);
@@ -236,7 +237,7 @@ export default function UserPage() {
                 />
                 <TableBody>
                   {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                    const { id, name, role, status, email, address, photoURL } = row;
+                    const { id, name, role, status, email, address, dpurl } = row;
                     const selectedUser = selected.indexOf(email) !== -1;
 
                     return (
@@ -247,7 +248,7 @@ export default function UserPage() {
 
                         <TableCell component="th" scope="row" padding="none">
                           <Stack direction="row" alignItems="center" spacing={2}>
-                            <Avatar alt={name} src={photoURL} />
+                            <Avatar alt={name} src={dpurl} />
                             <Typography variant="subtitle2" noWrap>
                               {name}
                             </Typography>

@@ -31,8 +31,8 @@ function updateAccountInfo(response) {
 
   const dpLocation = '/assets/images/dp/';
 
-  if (response.data.photoURL) {
-    response.data.photoURL = `${dpLocation}${response.data.photoURL}`;
+  if (response.data.dpurl) {
+    response.data.dpurl = `${dpLocation}${response.data.dpurl}`;
   } else {
     let defaultProfilePhotoUrl = '';
     switch (response.data.gender) {
@@ -46,6 +46,7 @@ function updateAccountInfo(response) {
         defaultProfilePhotoUrl = `${dpLocation}avatar_default.jpg`;
     }
 
-    response.data.photoURL = defaultProfilePhotoUrl;
+    response.data.dpurl = defaultProfilePhotoUrl;
   }
+  console.log(response.data.dpurl);
 }
