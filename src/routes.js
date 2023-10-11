@@ -8,7 +8,7 @@ import ContactPage from './pages/ContactPage';
 import DashboardAppPage from './pages/DashboardAppPage';
 import LoginPage from './pages/LoginPage';
 import Page404 from './pages/Page404';
-import ProductsPage from './pages/ProductsPage';
+import PortfolioPage from './pages/PortfolioPage';
 import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
 import SignupPage from './pages/SignupPage';
@@ -25,7 +25,7 @@ export default function Router() {
         { element: <Navigate to="/dashboard/app" />, index: true },
         { path: 'app', element: <DashboardAppPage /> },
         { path: 'user', element: <UserPage /> },
-        { path: 'products', element: <ProductsPage /> },
+        { path: 'portfolio', element: <PortfolioPage /> },
         { path: 'blog', element: <BlogPage /> },
         { path: 'profile', element: <ProfilePage /> },
         { path: 'settings', element: <SettingsPage /> },

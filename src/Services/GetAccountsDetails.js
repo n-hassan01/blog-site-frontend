@@ -6,14 +6,14 @@ export const getAccountDetailsService = async () => {
   console.log(getCookie('email-cookie'));
   const response = await getAccountDetails(getCookie('email-cookie'));
   
+  if(!response) return null;
+  
   updateAccountInfo(response);
 
   return response.data;
 };
 
 function updateAccountInfo(response) {
-  if (!response.data) return;
-
   switch (response.data.role) {
     case 1:
       response.data.role = 'Admin';
@@ -48,5 +48,4 @@ function updateAccountInfo(response) {
 
     response.data.dpurl = defaultProfilePhotoUrl;
   }
-  console.log(response.data.dpurl);
 }

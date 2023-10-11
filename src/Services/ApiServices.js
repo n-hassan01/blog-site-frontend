@@ -1,4 +1,5 @@
 import axios from 'axios';
+import getCookieService from "./GetCookieService";
 
 const usersUrl = 'http://localhost:4000/';
 
@@ -23,8 +24,14 @@ export const login = async (user) => {
 };
 
 export const getAccountDetails = async (emailAddress) => {
+  const cookie = getCookieService('jwt-token-cookie');
+
   try {
-    return await axios.get(`${usersUrl}account-info/${emailAddress}`);
+    return await axios.get(`${usersUrl}account-info/${emailAddress}`, {
+      headers: {
+          Authorization: `Bearer ${cookie}`
+      }
+    });
   } catch (err) {
     console.log(err.message);
 
@@ -96,6 +103,32 @@ export const updateUserStatus = async (bodyInfo) => {
 export const uploadProfilePhoto = async (emailAddress, bodyInfo) => {
   try {
     return await axios.post(`${usersUrl}upload/profile-photo/${emailAddress}`, bodyInfo);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
+export const deleteUser = async (emailAddress) => {
+  const cookie = getCookieService('jwt-token-cookie');
+  
+  try {
+    return await axios.delete(`${usersUrl}remove-user/${emailAddress}`, {
+      headers: {
+        Authorization: `Bearer ${cookie}`,
+      }
+    });
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
+export const sendEmailService = async (bodyInfo) => {
+  try {
+    return await axios.post(`${usersUrl}send-email/`, bodyInfo);
   } catch (err) {
     console.log(err.message);
 

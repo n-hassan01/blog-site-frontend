@@ -41,6 +41,7 @@ const TABLE_HEAD = [
   { id: 'status', label: 'Status', alignRight: false },
   { id: '' },
 ];
+const selectedUsers = [];
 
 // ----------------------------------------------------------------------
 
@@ -100,8 +101,7 @@ export default function UserPage() {
     async function fetchData() {
       try {
         const usersDetails = await getUsersDetailsService();
-        console.log(usersDetails);
-        setUserList(usersDetails);
+        if(usersDetails) setUserList(usersDetails);
       } catch (error) {
         console.error('Error fetching account details:', error);
       }
@@ -173,6 +173,7 @@ export default function UserPage() {
 
   const handleClick = (event, name) => {
     const selectedIndex = selected.indexOf(name);
+    selectedUsers.push(name);
     let newSelected = [];
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, name);
@@ -184,6 +185,7 @@ export default function UserPage() {
       newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
     }
     setSelected(newSelected);
+    console.log(typeof selectedUsers);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -221,7 +223,7 @@ export default function UserPage() {
         </Stack>
 
         <Card>
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} />
+          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} selectedUsers={selected} />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>

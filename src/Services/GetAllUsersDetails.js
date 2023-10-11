@@ -3,14 +3,14 @@ import { getUsersDetails } from './ApiServices';
 export const getUsersDetailsService = async () => {
   const response = await getUsersDetails();
 
-  const updatedResponse = response.data.map(data => updateAccountInfo(data))
+  if(!response) return null;
+
+  const updatedResponse = response.data.filter(data => data.status !== 'deleted').map(data => updateAccountInfo(data))
 
   return updatedResponse;
 };
 
 function updateAccountInfo(response) {
-  if (!response) return;
-
   switch (response.role) {
     case 1:
       response.role = 'Admin';

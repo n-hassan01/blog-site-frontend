@@ -43,6 +43,7 @@ export default function ResponsiveDialog() {
   };
 
   const validatePassword = (password) => password.length >= 6;
+  
   const onValueChange = (e) => {
     if (e.target) setUser({ ...user, [e.target.name]: e.target.value });
     else setUser({ ...user, role: e.value });
@@ -84,8 +85,8 @@ export default function ResponsiveDialog() {
         }
 
         handleClose();
-        navigate('/dashboard/app', { replace: true });
-        // window.location.reload();
+        navigate('/dashboard/user', { replace: true });
+        window.location.reload();
       } catch (err) {
         console.log(err.message);
         alert('Process failed! Try again later');

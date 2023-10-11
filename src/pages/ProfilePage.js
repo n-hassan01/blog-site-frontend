@@ -67,19 +67,8 @@ export default function ProfilePage() {
                     className="mt-4 mb-2 img-thumbnail"
                     id="image"
                     fluid
-                    style={{ width: '150px', zIndex: '1', maxHeight: '155px' }}
+                    style={{ width: '150px', zIndex: '1', maxHeight: '155px', minHeight: '155px' }}
                   />
-                  {/* <button
-                    type="button"
-                    className="btn btn-outline-secondary"
-                    data-mdb-ripple-color="dark"
-                    style={{ zIndex: 1 }}
-                    onClick={uplodPhoto}
-                  >
-                    <input type="file" style={{ display: 'none' }} onChange={uplodPhoto} />
-                    <Iconify icon={'mdi:camera'} className="icon" />
-                    Upload Photo
-                  </button> */}
                   <label className="btn btn-outline-secondary" style={{ zIndex: 1 }} htmlFor='fileInput'>
                     <input
                       type="file"
