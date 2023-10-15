@@ -1,10 +1,10 @@
 import { getAccountDetails } from './ApiServices';
-import getCookie from "./GetCookieService";
+import { loggedInUserDetails } from "./GetLoggedInUserDetails";
 
 
 export const getAccountDetailsService = async () => {
-  console.log(getCookie('email-cookie'));
-  const response = await getAccountDetails(getCookie('email-cookie'));
+  console.log(loggedInUserDetails.getLoggedInUserEmail);
+  const response = await getAccountDetails(loggedInUserDetails.getLoggedInUserEmail);
   
   if(!response) return null;
   
