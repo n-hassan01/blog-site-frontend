@@ -65,9 +65,7 @@ export default function BlogPostCard({ post, index }) {
   const coverUrl = cover ? `/assets/images/covers/${cover}` : '/assets/images/covers/cover_21.jpg';
 
   const POST_INFO = [
-    // { number: comment, icon: 'eva:message-circle-fill' },
     { number: read, icon: 'eva:eye-fill' },
-    // { number: share, icon: 'eva:share-fill' },
     { number: like, icon: 'icon-park-solid:like' },
   ];
 

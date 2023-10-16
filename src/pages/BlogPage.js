@@ -24,8 +24,8 @@ export default function BlogPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const accountDetails = await getBlogsDetailsService();
-        setBlogPost(accountDetails);
+        const blogDetails = await getBlogsDetailsService();
+        setBlogPost(blogDetails);
       } catch (error) {
         console.error('Error fetching account details:', error);
       }
