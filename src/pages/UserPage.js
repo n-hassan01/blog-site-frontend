@@ -26,7 +26,7 @@ import Iconify from '../components/iconify';
 import Label from '../components/label';
 import Scrollbar from '../components/scrollbar';
 // sections
-import { updateUserStatus } from '../Services/ApiServices';
+import { getLoggedInUserDetails, updateUserStatus } from '../Services/ApiServices';
 import { getUsersDetailsService } from '../Services/GetAllUsersDetails';
 import { UserListHead, UserListToolbar } from '../sections/@dashboard/user';
 import AddUserDialog from '../sections/@dashboard/user/AddUserDialog';
@@ -92,7 +92,7 @@ export default function UserPage() {
   const [USERLIST, setUserList] = useState([]);
 
   const [isDisableApprove, setIsDisableApprove] = useState(false);
-  
+
   const [isDisableBan, setIsDisableBan] = useState(false);
 
   const [selectedUserEmail, setSelectedUserEmail] = useState('');
@@ -101,7 +101,7 @@ export default function UserPage() {
     async function fetchData() {
       try {
         const usersDetails = await getUsersDetailsService();
-        if(usersDetails) setUserList(usersDetails);
+        if (usersDetails) setUserList(usersDetails);
       } catch (error) {
         console.error('Error fetching account details:', error);
       }
@@ -110,10 +110,27 @@ export default function UserPage() {
     fetchData();
   }, []);
 
+  const [loggedInUser, setLoggedInUser] = useState({});
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const usersDetails = await getLoggedInUserDetails();
+        if (usersDetails) setLoggedInUser(usersDetails.data);
+      } catch (error) {
+        console.error('Error fetching account details:', error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  const displayAddUser = loggedInUser.role === 1 ? 'block' : 'none';
+
   const handleOpenMenu = (event, status, email) => {
     if (status === 'approved') setIsDisableApprove(true);
     else setIsDisableApprove(false);
-    
+
     if (status === 'banned') setIsDisableBan(true);
     else setIsDisableBan(false);
 
@@ -219,11 +236,18 @@ export default function UserPage() {
           <Typography variant="h4" gutterBottom>
             Users
           </Typography>
-          <AddUserDialog />
+          <div style={{ display: displayAddUser }}>
+            <AddUserDialog />
+          </div>
         </Stack>
 
         <Card>
-          <UserListToolbar numSelected={selected.length} filterName={filterName} onFilterName={handleFilterByName} selectedUsers={selected} />
+          <UserListToolbar
+            numSelected={selected.length}
+            filterName={filterName}
+            onFilterName={handleFilterByName}
+            selectedUsers={selected}
+          />
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800 }}>
@@ -272,7 +296,11 @@ export default function UserPage() {
                         </TableCell>
 
                         <TableCell align="right">
-                          <IconButton size="large" color="inherit" onClick={(event) => handleOpenMenu(event, status, email)}>
+                          <IconButton
+                            size="large"
+                            color="inherit"
+                            onClick={(event) => handleOpenMenu(event, status, email)}
+                          >
                             <Iconify icon={'eva:more-vertical-fill'} />
                           </IconButton>
                         </TableCell>
