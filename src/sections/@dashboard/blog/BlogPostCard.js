@@ -57,14 +57,18 @@ BlogPostCard.propTypes = {
 };
 
 export default function BlogPostCard({ post, index }) {
-  const { cover, title, view, comment, share, author, createdAt } = post;
+  const { authorName, authorPhoto, title, cover, postdate, content, like, read } = post;
   const latestPostLarge = index === 0;
   const latestPost = index === 1 || index === 2;
 
+  const authorPhotoUrl = `/assets/images/dp/${authorPhoto}`;
+  const coverUrl = cover ? `/assets/images/covers/${cover}` : '/assets/images/covers/cover_21.jpg';
+
   const POST_INFO = [
-    { number: comment, icon: 'eva:message-circle-fill' },
-    { number: view, icon: 'eva:eye-fill' },
-    { number: share, icon: 'eva:share-fill' },
+    // { number: comment, icon: 'eva:message-circle-fill' },
+    { number: read, icon: 'eva:eye-fill' },
+    // { number: share, icon: 'eva:share-fill' },
+    { number: like, icon: 'icon-park-solid:like' },
   ];
 
   return (
@@ -105,8 +109,8 @@ export default function BlogPostCard({ post, index }) {
             }}
           />
           <StyledAvatar
-            alt={author.name}
-            src={author.avatarUrl}
+            alt={authorName}
+            src={authorPhotoUrl}
             sx={{
               ...((latestPostLarge || latestPost) && {
                 zIndex: 9,
@@ -118,7 +122,8 @@ export default function BlogPostCard({ post, index }) {
             }}
           />
 
-          <StyledCover alt={title} src={cover} />
+          <StyledCover alt={title} src={coverUrl} />
+          {/* <StyledCover alt={title} src={'/assets/images/covers/cover_1.jpg'} /> */}
         </StyledCardMedia>
 
         <CardContent
@@ -132,7 +137,8 @@ export default function BlogPostCard({ post, index }) {
           }}
         >
           <Typography gutterBottom variant="caption" sx={{ color: 'text.disabled', display: 'block' }}>
-            {fDate(createdAt)}
+            {/* {fDate('10/16/2023')} */}
+            {fDate(postdate)}
           </Typography>
 
           <StyledTitle

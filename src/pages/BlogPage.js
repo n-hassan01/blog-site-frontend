@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 // @mui
 import { Button, Container, Grid, Stack, Typography } from '@mui/material';
@@ -5,7 +6,7 @@ import { Button, Container, Grid, Stack, Typography } from '@mui/material';
 import Iconify from '../components/iconify';
 import { BlogPostCard, BlogPostsSearch, BlogPostsSort } from '../sections/@dashboard/blog';
 // mock
-import POSTS from '../_mock/blog';
+import { getBlogsDetailsService } from '../_mock/blog';
 
 // ----------------------------------------------------------------------
 
@@ -18,6 +19,21 @@ const SORT_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function BlogPage() {
+  const [blogPost, setBlogPost] = useState([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const accountDetails = await getBlogsDetailsService();
+        setBlogPost(accountDetails);
+      } catch (error) {
+        console.error('Error fetching account details:', error);
+      }
+    }
+
+    fetchData();
+  }, []);
+  
   return (
     <>
       <Helmet>
@@ -35,13 +51,13 @@ export default function BlogPage() {
         </Stack>
 
         <Stack mb={5} direction="row" alignItems="center" justifyContent="space-between">
-          <BlogPostsSearch posts={POSTS} />
+          <BlogPostsSearch posts={blogPost} />
           <BlogPostsSort options={SORT_OPTIONS} />
         </Stack>
 
         <Grid container spacing={3}>
-          {POSTS.map((post, index) => (
-            <BlogPostCard key={post.id} post={post} index={index} />
+          {blogPost.map((post, index) => (
+            <BlogPostCard key={post.blogid} post={post} index={index} />
           ))}
         </Grid>
       </Container>

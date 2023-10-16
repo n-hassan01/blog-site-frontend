@@ -4,7 +4,6 @@ import { Helmet } from 'react-helmet-async';
 import { Container, Grid, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 // components
-import account from '../_mock/account';
 import Iconify from '../components/iconify';
 // sections
 import {
@@ -23,8 +22,6 @@ import {
 
 export default function DashboardAppPage() {
   const theme = useTheme();
-  const user = account;
-  console.log(user);
 
   return (
     <>

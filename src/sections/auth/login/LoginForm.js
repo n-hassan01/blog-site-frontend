@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 // @mui
 import { LoadingButton } from '@mui/lab';
 import { IconButton, InputAdornment, Link, Stack, TextField, Typography } from '@mui/material';
 // components
 import { login } from '../../../Services/ApiServices';
-import { getAccountDetailsService } from '../../../Services/GetAccountsDetails';
-import { loggedInUserDetails } from '../../../Services/GetLoggedInUserDetails';
 import removeCookie from '../../../Services/RemoveCookieService';
 import setCookie from '../../../Services/SetCookieService';
 import Iconify from '../../../components/iconify';
@@ -19,21 +17,6 @@ export default function LoginForm() {
     password: '',
   };
   const [user, setUser] = useState(initialUser);
-
-  const [profile, setProfile] = useState({});
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const accountDetails = await getAccountDetailsService();
-        setProfile(accountDetails);
-      } catch (error) {
-        console.error('Error fetching account details:', error);
-      }
-    }
-
-    fetchData();
-  }, []);
 
   const navigate = useNavigate();
 
@@ -54,17 +37,10 @@ export default function LoginForm() {
         const cookieName = 'jwt-token-cookie';
 
         removeCookie(cookieName);
-        removeCookie('email-cookie');
 
         const cookie = setCookie(cookieName, token);
-        const emailCookie = setCookie('email-cookie', user.email);
-
-        // console.log(loggedInUserDetails.getLoggedInUserEmail);
-        loggedInUserDetails.setLoggedInUserEmail = user.email;
-        loggedInUserDetails.setLoggedInUserRole = profile.role;
 
         console.log(cookie);
-        console.log(emailCookie);
 
         navigate('/dashboard');
       } else {

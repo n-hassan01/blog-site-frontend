@@ -1,11 +1,13 @@
-import { getAccountDetails } from './ApiServices';
-import { loggedInUserDetails } from "./GetLoggedInUserDetails";
-
+import { getAccountDetails, getLoggedInUserDetails } from './ApiServices';
 
 export const getAccountDetailsService = async () => {
-  console.log(loggedInUserDetails.getLoggedInUserEmail);
-  const response = await getAccountDetails(loggedInUserDetails.getLoggedInUserEmail);
-  
+  const loggedInUser = await getLoggedInUserDetails();
+
+  if (!(loggedInUser.status === 200)) {
+    return null;
+  }
+
+  const response = await getAccountDetails(loggedInUser.data.email);
   if(!response) return null;
   
   updateAccountInfo(response);

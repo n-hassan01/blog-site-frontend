@@ -23,6 +23,22 @@ export const login = async (user) => {
   }
 };
 
+export const getLoggedInUserDetails = async () => {
+  const cookie = getCookieService('jwt-token-cookie');
+
+  try {
+    return await axios.get(`${usersUrl}logged-user/`, {
+      headers: {
+          Authorization: `Bearer ${cookie}`
+      }
+    });
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
 export const getAccountDetails = async (emailAddress) => {
   const cookie = getCookieService('jwt-token-cookie');
 
@@ -129,6 +145,16 @@ export const deleteUser = async (emailAddress) => {
 export const sendEmailService = async (bodyInfo) => {
   try {
     return await axios.post(`${usersUrl}send-email/`, bodyInfo);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
+export const getBlogsDetails = async () => {
+  try {
+    return await axios.get(`${usersUrl}blogs/`);
   } catch (err) {
     console.log(err.message);
 
