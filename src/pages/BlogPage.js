@@ -3,10 +3,11 @@ import { Helmet } from 'react-helmet-async';
 // @mui
 import { Button, Container, Grid, Stack, Typography } from '@mui/material';
 // components
+// mock
+import { getLoggedInUserDetails } from '../Services/ApiServices';
+import { getBlogsDetailsService } from '../_mock/blog';
 import Iconify from '../components/iconify';
 import { BlogPostCard, BlogPostsSearch, BlogPostsSort } from '../sections/@dashboard/blog';
-// mock
-import { getBlogsDetailsService } from '../_mock/blog';
 
 // ----------------------------------------------------------------------
 
@@ -33,7 +34,24 @@ export default function BlogPage() {
 
     fetchData();
   }, []);
-  
+
+  const [loggedInUser, setLoggedInUser] = useState({});
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const usersDetails = await getLoggedInUserDetails();
+        if (usersDetails) setLoggedInUser(usersDetails.data);
+      } catch (error) {
+        console.error('Error fetching account details:', error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  const displayAddUser = loggedInUser.role === 1 || loggedInUser.role === 2 ? 'flex' : 'none';
+
   return (
     <>
       <Helmet>
@@ -45,7 +63,11 @@ export default function BlogPage() {
           <Typography variant="h4" gutterBottom>
             Blog
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:plus-fill" />}>
+          <Button
+            style={{ display: displayAddUser }}
+            variant="contained"
+            startIcon={<Iconify icon="eva:plus-fill" />}
+          >
             New Post
           </Button>
         </Stack>

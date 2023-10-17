@@ -1,13 +1,21 @@
 import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 // @mui
-import { Avatar, Box, Card, CardContent, Grid, Link, Typography } from '@mui/material';
-import { alpha, styled } from '@mui/material/styles';
+import { Avatar, Box, Button, Card, CardContent, Grid, Link, Typography } from '@mui/material';
+import { alpha, styled, useTheme } from '@mui/material/styles';
 // utils
-import { fShortenNumber } from '../../../utils/formatNumber';
-import { fDate } from '../../../utils/formatTime';
 //
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { addBlogReadService, getLikeCount, getLikedBlogDetails, getReadCount, likeBlogService } from '../../../Services/ApiServices';
 import Iconify from '../../../components/iconify';
 import SvgColor from '../../../components/svg-color';
+import { fShortenNumber } from '../../../utils/formatNumber';
+import { fDate } from '../../../utils/formatTime';
 
 // ----------------------------------------------------------------------
 
@@ -57,17 +65,86 @@ BlogPostCard.propTypes = {
 };
 
 export default function BlogPostCard({ post, index }) {
-  const { authorName, authorPhoto, title, cover, postdate, content, like, read } = post;
+  const { blogid, authorName, authorPhoto, title, cover, postdate, content, like, read } = post;
   const latestPostLarge = index === 0;
   const latestPost = index === 1 || index === 2;
 
   const authorPhotoUrl = `/assets/images/dp/${authorPhoto}`;
   const coverUrl = cover ? `/assets/images/covers/${cover}` : '/assets/images/covers/cover_21.jpg';
 
+  const [open, setOpen] = useState(false);
+  const [readCount, setReadCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const counts = await getReadCount(blogid);
+        if (counts.status === 200) setReadCount(counts.data.count);
+      } catch (error) {
+        console.error('Error fetching account details:', error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  const [likeCount, setLikeCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const counts = await getLikeCount(blogid);
+        if (counts.status === 200) setLikeCount(counts.data.count);
+      } catch (error) {
+        console.error('Error fetching account details:', error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  const [likeDetails, setLikeDetails] = useState('');
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const like = await getLikedBlogDetails(blogid);
+        if (like.status === 200) setLikeDetails(like.data.displaytext ? like.data.displaytext : 'Like');
+      } catch (error) {
+        console.error('Error fetching account details:', error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
   const POST_INFO = [
-    { number: read, icon: 'eva:eye-fill' },
-    { number: like, icon: 'icon-park-solid:like' },
+    { number: readCount, icon: 'eva:eye-fill' },
+    { number: likeCount, icon: 'icon-park-solid:like' },
   ];
+
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+  const handleClickOpen = async () => {
+    setOpen(true);
+    const response = await addBlogReadService(blogid);
+
+    console.log(response.data);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    window.location.reload();
+  };
+
+  const likeBlog = async () => {
+    const response = await likeBlogService(blogid);
+    console.log(response.data);
+
+    const like = await getLikedBlogDetails(blogid);
+    if (like.status === 200) setLikeDetails(like.data.displaytext ? like.data.displaytext : 'Like');
+  };
 
   return (
     <Grid item xs={12} sm={latestPostLarge ? 12 : 6} md={latestPostLarge ? 6 : 3}>
@@ -133,6 +210,7 @@ export default function BlogPostCard({ post, index }) {
               position: 'absolute',
             }),
           }}
+          onClick={handleClickOpen}
         >
           <Typography gutterBottom variant="caption" sx={{ color: 'text.disabled', display: 'block' }}>
             {/* {fDate('10/16/2023')} */}
@@ -149,6 +227,7 @@ export default function BlogPostCard({ post, index }) {
                 color: 'common.white',
               }),
             }}
+            style={{ cursor: 'pointer' }}
           >
             {title}
           </StyledTitle>
@@ -172,6 +251,40 @@ export default function BlogPostCard({ post, index }) {
             ))}
           </StyledInfo>
         </CardContent>
+        <Dialog
+          fullScreen={fullScreen}
+          open={open}
+          onClose={handleClose}
+          scroll={'paper'}
+          aria-labelledby="responsive-dialog-title"
+        >
+          {/* <Button
+            aria-label="close"
+            onClick={handleClose}
+            sx={{
+              position: 'absolute',
+              right: 0,
+              top: 11,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <Iconify icon={'mdi:close-box'} sx={{ width: 30, height: 30, mr: 0.5 }} />
+          </Button> */}
+          <DialogTitle id="responsive-dialog-title" style={{ marginRight: '80px' }}>
+            {title}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>{content}</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button autoFocus onClick={handleClose}>
+              Close
+            </Button>
+            <Button autoFocus onClick={likeBlog}>
+              {likeDetails}
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Card>
     </Grid>
   );

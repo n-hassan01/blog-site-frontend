@@ -161,3 +161,85 @@ export const getBlogsDetails = async () => {
     return err.message;
   }
 };
+
+export const getReadCount = async (blogId) => {
+  const cookie = getCookieService('jwt-token-cookie');
+
+  try {
+    return await axios.get(`${usersUrl}read-count/${blogId}`, {
+      headers: {
+          Authorization: `Bearer ${cookie}`
+      }
+    });
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
+export const addBlogReadService = async (blogId) => {
+  const cookie = getCookieService('jwt-token-cookie');
+  console.log(cookie);
+
+  try {
+    return await axios.post(`${usersUrl}read-blog/${blogId}`, {}, {
+      headers: {
+          Authorization: `Bearer ${cookie}`
+      }
+    });
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
+export const likeBlogService = async (blogId) => {
+  const cookie = getCookieService('jwt-token-cookie');
+  console.log(cookie);
+
+  try {
+    return await axios.post(`${usersUrl}like-blog/${blogId}`, {}, {
+      headers: {
+          Authorization: `Bearer ${cookie}`
+      }
+    });
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
+export const getLikedBlogDetails = async (blogId) => {
+  const cookie = getCookieService('jwt-token-cookie');
+
+  try {
+    return await axios.get(`${usersUrl}like-stat/${blogId}`, {
+      headers: {
+          Authorization: `Bearer ${cookie}`
+      }
+    });
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
+export const getLikeCount = async (blogId) => {
+  const cookie = getCookieService('jwt-token-cookie');
+
+  try {
+    return await axios.get(`${usersUrl}like-count/${blogId}`, {
+      headers: {
+          Authorization: `Bearer ${cookie}`
+      }
+    });
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
