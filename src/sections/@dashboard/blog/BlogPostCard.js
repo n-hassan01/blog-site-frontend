@@ -210,6 +210,7 @@ export default function BlogPostCard({ post, index }) {
               position: 'absolute',
             }),
           }}
+          style={{ cursor: 'pointer' }}
           onClick={handleClickOpen}
         >
           <Typography gutterBottom variant="caption" sx={{ color: 'text.disabled', display: 'block' }}>
@@ -227,7 +228,6 @@ export default function BlogPostCard({ post, index }) {
                 color: 'common.white',
               }),
             }}
-            style={{ cursor: 'pointer' }}
           >
             {title}
           </StyledTitle>
