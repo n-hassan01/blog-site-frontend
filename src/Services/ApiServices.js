@@ -126,6 +126,16 @@ export const uploadProfilePhoto = async (emailAddress, bodyInfo) => {
   }
 };
 
+export const uploadBlogCoverService = async (bodyInfo) => {
+  try {
+    return await axios.post(`${usersUrl}upload-blog-cover/`, bodyInfo);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
 export const deleteUser = async (emailAddress) => {
   const cookie = getCookieService('jwt-token-cookie');
   

@@ -1,10 +1,17 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 // @mui
 import { Button, Container, Grid, Stack, Typography } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 // components
 // mock
-import { getLoggedInUserDetails } from '../Services/ApiServices';
+import { getLoggedInUserDetails, uploadBlogCoverService } from '../Services/ApiServices';
 import { getBlogsDetailsService } from '../_mock/blog';
 import Iconify from '../components/iconify';
 import { BlogPostCard, BlogPostsSearch, BlogPostsSort } from '../sections/@dashboard/blog';
@@ -52,6 +59,44 @@ export default function BlogPage() {
 
   const displayAddUser = loggedInUser.role === 1 || loggedInUser.role === 2 ? 'flex' : 'none';
 
+  const [open, setOpen] = useState(false);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleClick = () => {
+    setOpen(false);
+  };
+
+  // const handleFileChange = (e) => {
+  //   // Handle file changes here
+  //   const selectedFile = e.target.files[0];
+  //   // Do something with the selected file
+  //   console.log(selectedFile);
+  // };
+
+  const handleFileChange = async (event) => {
+    const selectedFile = event.target.files[0]; 
+
+    if (selectedFile) {
+      console.log('Selected file:', selectedFile);
+
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      const response = await uploadBlogCoverService(formData);
+
+      console.log(response.data);
+
+      // const alertMessage = response.status === 200 ? response.data.message : 'Upload failed! Try again';
+
+      // alert(alertMessage);
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -61,12 +106,13 @@ export default function BlogPage() {
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Blog
+            Blogs
           </Typography>
           <Button
             style={{ display: displayAddUser }}
             variant="contained"
             startIcon={<Iconify icon="eva:plus-fill" />}
+            onClick={() => setOpen(true)}
           >
             New Post
           </Button>
@@ -83,6 +129,54 @@ export default function BlogPage() {
           ))}
         </Grid>
       </Container>
+
+      <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} aria-labelledby="responsive-dialog-title">
+        <DialogTitle id="responsive-dialog-title">{'Write a Blog'}</DialogTitle>
+        <DialogContent>
+          <form action="#" method="post" encType="multipart/form-data">
+            <div className="form-group">
+              <label htmlFor="title">Title:</label>
+              <input type="text" className="form-control" id="title" name="title" required="" />
+            </div>
+            <div className="form-group" style={{ margin: '10px 0' }}>
+              <label htmlFor="image" style={{ width: '100%' }}>
+                Cover:
+              </label>
+              <input
+                type="file"
+                className="form-control-file"
+                id="image"
+                name="image"
+                accept="image/*"
+                required=""
+                onChange={(e) => handleFileChange(e)}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="description">Description:</label>
+              <textarea
+                className="form-control"
+                id="description"
+                name="description"
+                rows={4}
+                required=""
+                defaultValue={''}
+              />
+            </div>
+            {/* <button type="submit" className="btn btn-primary">
+              Submit
+            </button> */}
+          </form>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleClick}>
+            Post
+          </Button>
+          <Button onClick={handleClose} autoFocus>
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

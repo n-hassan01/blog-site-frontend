@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 // @mui
 import { Avatar, Box, Divider, IconButton, MenuItem, Popover, Stack, Typography } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 // mocks_
-import Logout from "../../../Services/LogoutService";
+import Logout from '../../../Services/LogoutService';
 // import account from '../../../_mock/account';
 import { getAccountDetailsService } from '../../../Services/GetAccountsDetails';
 
@@ -17,12 +17,13 @@ export default function AccountPopover() {
   const [open, setOpen] = useState(null);
 
   const [account, setAccount] = useState({});
+  const [loggedInUser, setLoggedInUser] = useState({});
 
   useEffect(() => {
     async function fetchData() {
       try {
         const accountDetails = await getAccountDetailsService(); // Call your async function here
-        setAccount(accountDetails); // Set the account details in the component's state
+        setLoggedInUser(accountDetails); // Set the account details in the component's state
       } catch (error) {
         // Handle any errors that might occur during the async operation
         console.error('Error fetching account details:', error);
@@ -31,6 +32,20 @@ export default function AccountPopover() {
 
     fetchData(); // Call the async function when the component mounts
   }, []);
+  console.log(loggedInUser);
+
+  useEffect(() => {
+    function fetchData() {
+      try {
+        if (loggedInUser) setAccount(loggedInUser); // Set the account details in the component's state
+      } catch (error) {
+        // Handle any errors that might occur during the async operation
+        console.error('Error fetching account details:', error);
+      }
+    }
+
+    fetchData(); // Call the async function when the component mounts
+  }, [loggedInUser]);
   console.log(account);
 
   const handleOpen = (event) => {
@@ -40,27 +55,27 @@ export default function AccountPopover() {
   const handleClose = () => {
     setOpen(null);
   };
-  
+
   const openProfilePage = () => {
-    navigate('/dashboard/profile')
+    navigate('/dashboard/profile');
     setOpen(null);
   };
 
   const openDashboardPage = () => {
-    navigate('/dashboard')
+    navigate('/dashboard');
     setOpen(null);
   };
 
   const openSettingsPage = () => {
-    navigate('/dashboard/settings')
+    navigate('/dashboard/settings');
     setOpen(null);
   };
 
   const logout = () => {
     Logout();
-    
+
     setOpen(null);
-    navigate('/login')
+    navigate('/login');
   };
 
   const MENU_OPTIONS = [

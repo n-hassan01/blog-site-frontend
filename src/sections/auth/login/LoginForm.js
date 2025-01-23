@@ -31,16 +31,12 @@ export default function LoginForm() {
       const response = await login(user);
 
       if (response.request.status === 200) {
-        alert(response.data.message);
-
         const token = response.data.value;
         const cookieName = 'jwt-token-cookie';
 
         removeCookie(cookieName);
 
         const cookie = setCookie(cookieName, token);
-
-        console.log(cookie);
 
         navigate('/dashboard');
       } else {
