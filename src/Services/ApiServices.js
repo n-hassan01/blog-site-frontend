@@ -39,11 +39,11 @@ export const getLoggedInUserDetails = async () => {
   }
 };
 
-export const getAccountDetails = async (emailAddress) => {
+export const getAccountDetails = async () => {
   const cookie = getCookieService('jwt-token-cookie');
 
   try {
-    return await axios.get(`${usersUrl}account-info/${emailAddress}`, {
+    return await axios.get(`${usersUrl}account-info/`, {
       headers: {
           Authorization: `Bearer ${cookie}`
       }
@@ -128,7 +128,7 @@ export const uploadProfilePhoto = async (emailAddress, bodyInfo) => {
 
 export const uploadBlogCoverService = async (bodyInfo) => {
   try {
-    return await axios.post(`${usersUrl}upload-blog-cover/`, bodyInfo);
+    return await axios.post(`${usersUrl}blog-cover/upload`, bodyInfo);
   } catch (err) {
     console.log(err.message);
 
@@ -155,6 +155,16 @@ export const deleteUser = async (emailAddress) => {
 export const sendEmailService = async (bodyInfo) => {
   try {
     return await axios.post(`${usersUrl}send-email/`, bodyInfo);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
+export const addBlogService = async (bodyInfo) => {
+  try {
+    return await axios.post(`${usersUrl}post-blog/`, bodyInfo);
   } catch (err) {
     console.log(err.message);
 
@@ -207,7 +217,6 @@ export const addBlogReadService = async (blogId) => {
 
 export const likeBlogService = async (blogId) => {
   const cookie = getCookieService('jwt-token-cookie');
-  console.log(cookie);
 
   try {
     return await axios.post(`${usersUrl}like-blog/${blogId}`, {}, {

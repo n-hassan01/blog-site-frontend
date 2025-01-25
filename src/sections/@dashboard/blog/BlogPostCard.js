@@ -11,7 +11,13 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import { addBlogReadService, getLikeCount, getLikedBlogDetails, getReadCount, likeBlogService } from '../../../Services/ApiServices';
+import {
+  addBlogReadService,
+  getLikeCount,
+  getLikedBlogDetails,
+  getReadCount,
+  likeBlogService,
+} from '../../../Services/ApiServices';
 import Iconify from '../../../components/iconify';
 import SvgColor from '../../../components/svg-color';
 import { fShortenNumber } from '../../../utils/formatNumber';
@@ -133,9 +139,14 @@ export default function BlogPostCard({ post, index }) {
     console.log(response.data);
   };
 
-  const handleClose = () => {
+  const handleClose = async () => {
+    const likeResponse = await getLikeCount(blogid);
+    if (likeResponse.status === 200) setLikeCount(likeResponse.data.count);
+
+    const countResponse = await getReadCount(blogid);
+    if (countResponse.status === 200) setReadCount(countResponse.data.count);
+
     setOpen(false);
-    window.location.reload();
   };
 
   const likeBlog = async () => {
@@ -252,7 +263,8 @@ export default function BlogPostCard({ post, index }) {
           </StyledInfo>
         </CardContent>
         <Dialog
-          fullScreen={fullScreen}
+          fullWidth
+          // fullScreen={fullScreen}
           open={open}
           onClose={handleClose}
           scroll={'paper'}
@@ -277,12 +289,8 @@ export default function BlogPostCard({ post, index }) {
             <DialogContentText>{content}</DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button autoFocus onClick={handleClose}>
-              Close
-            </Button>
-            <Button autoFocus onClick={likeBlog}>
-              {likeDetails}
-            </Button>
+            <Button onClick={handleClose}>Close</Button>
+            <Button onClick={likeBlog}>{likeDetails}</Button>
           </DialogActions>
         </Dialog>
       </Card>

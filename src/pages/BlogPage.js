@@ -8,10 +8,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 // components
 // mock
-import { getLoggedInUserDetails, uploadBlogCoverService } from '../Services/ApiServices';
+import { addBlogService, getAccountDetails, uploadBlogCoverService } from '../Services/ApiServices';
 import { getBlogsDetailsService } from '../_mock/blog';
 import Iconify from '../components/iconify';
 import { BlogPostCard, BlogPostsSearch, BlogPostsSort } from '../sections/@dashboard/blog';
@@ -27,8 +26,9 @@ const SORT_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function BlogPage() {
-  const [blogPost, setBlogPost] = useState([]);
+  const [blogInfo, setBlogInfo] = useState({ title: '', cover: '', content: '' });
 
+  const [blogPost, setBlogPost] = useState([]);
   useEffect(() => {
     async function fetchData() {
       try {
@@ -42,13 +42,12 @@ export default function BlogPage() {
     fetchData();
   }, []);
 
-  const [loggedInUser, setLoggedInUser] = useState({});
-
+  const [accountInfo, setAccountInfo] = useState([]);
   useEffect(() => {
     async function fetchData() {
       try {
-        const usersDetails = await getLoggedInUserDetails();
-        if (usersDetails) setLoggedInUser(usersDetails.data);
+        const response = await getAccountDetails();
+        setAccountInfo(response.data);
       } catch (error) {
         console.error('Error fetching account details:', error);
       }
@@ -56,44 +55,64 @@ export default function BlogPage() {
 
     fetchData();
   }, []);
+  console.log(accountInfo);
 
-  const displayAddUser = loggedInUser.role === 1 || loggedInUser.role === 2 ? 'flex' : 'none';
+  const displayAddUser = accountInfo.role === 1 || accountInfo.role === 2 ? 'flex' : 'none';
 
   const [open, setOpen] = useState(false);
   const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+  // const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const handleClick = () => {
-    setOpen(false);
+  const handleInputChange = (e) => {
+    setBlogInfo({ ...blogInfo, [e.target.name]: e.target.value });
   };
 
-  // const handleFileChange = (e) => {
-  //   // Handle file changes here
-  //   const selectedFile = e.target.files[0];
-  //   // Do something with the selected file
-  //   console.log(selectedFile);
-  // };
+  const handleClick = async () => {
+    try {
+      const requestBody = {
+        authorName: accountInfo.name,
+        authorPhoto: accountInfo.dpurl,
+        title: blogInfo.title,
+        cover: blogInfo.cover,
+        content: blogInfo.content,
+      };
+      const response = await addBlogService(requestBody);
+
+      const alertMessage = response.status === 200 ? 'Successfully added!' : 'Process failed! Try again';
+      alert(alertMessage);
+    } catch (error) {
+      console.error('Error posting blog:', error);
+      alert('Process failed! Try again');
+    } finally {
+      setOpen(false);
+    }
+  };
 
   const handleFileChange = async (event) => {
-    const selectedFile = event.target.files[0]; 
+    try {
+      const selectedFile = event.target.files?.[0];
 
-    if (selectedFile) {
-      console.log('Selected file:', selectedFile);
+      if (!selectedFile) {
+        console.error('No file selected.');
+        return;
+      }
 
       const formData = new FormData();
       formData.append('file', selectedFile);
 
       const response = await uploadBlogCoverService(formData);
 
-      console.log(response.data);
+      const key = 'cover';
+      const value = response?.data?.value || '';
+      console.log(value);
 
-      // const alertMessage = response.status === 200 ? response.data.message : 'Upload failed! Try again';
-
-      // alert(alertMessage);
+      setBlogInfo({ ...blogInfo, [key]: value });
+    } catch (error) {
+      console.error('Error uploading file:', error);
     }
   };
 
@@ -130,13 +149,20 @@ export default function BlogPage() {
         </Grid>
       </Container>
 
-      <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} aria-labelledby="responsive-dialog-title">
+      <Dialog open={open} onClose={handleClose} aria-labelledby="responsive-dialog-title">
         <DialogTitle id="responsive-dialog-title">{'Write a Blog'}</DialogTitle>
         <DialogContent>
           <form action="#" method="post" encType="multipart/form-data">
             <div className="form-group">
               <label htmlFor="title">Title:</label>
-              <input type="text" className="form-control" id="title" name="title" required="" />
+              <input
+                type="text"
+                className="form-control"
+                id="title"
+                name="title"
+                required=""
+                onChange={(e) => handleInputChange(e)}
+              />
             </div>
             <div className="form-group" style={{ margin: '10px 0' }}>
               <label htmlFor="image" style={{ width: '100%' }}>
@@ -146,9 +172,7 @@ export default function BlogPage() {
                 type="file"
                 className="form-control-file"
                 id="image"
-                name="image"
-                accept="image/*"
-                required=""
+                name="cover"
                 onChange={(e) => handleFileChange(e)}
               />
             </div>
@@ -157,15 +181,13 @@ export default function BlogPage() {
               <textarea
                 className="form-control"
                 id="description"
-                name="description"
+                name="content"
                 rows={4}
                 required=""
                 defaultValue={''}
+                onChange={(e) => handleInputChange(e)}
               />
             </div>
-            {/* <button type="submit" className="btn btn-primary">
-              Submit
-            </button> */}
           </form>
         </DialogContent>
         <DialogActions>
