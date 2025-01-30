@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 
 // @mui
-import { styled } from '@mui/material/styles';
 import { Autocomplete, InputAdornment, Popper, TextField } from '@mui/material';
+import { styled } from '@mui/material/styles';
 // components
 import Iconify from '../../../components/iconify';
 
@@ -16,18 +16,20 @@ const StyledPopper = styled((props) => <Popper placement="bottom-start" {...prop
 
 BlogPostsSearch.propTypes = {
   posts: PropTypes.array.isRequired,
+  onSearchPost: PropTypes.func.isRequired,
 };
 
-export default function BlogPostsSearch({ posts }) {
+export default function BlogPostsSearch({ posts, onSearchPost }) {
   return (
     <Autocomplete
-      sx={{ width: 280 }}
+      sx={{ width: 280, marginRight: '1rem' }}
       autoHighlight
       popupIcon={null}
       PopperComponent={StyledPopper}
       options={posts}
       getOptionLabel={(post) => post.title}
       isOptionEqualToValue={(option, value) => option.id === value.id}
+      onChange={(event, newValue) => onSearchPost(newValue)}
       renderInput={(params) => (
         <TextField
           {...params}

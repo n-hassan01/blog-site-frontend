@@ -10,7 +10,14 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { useTheme } from '@mui/material/styles';
 // components
 // mock
-import { addBlogService, getAccountDetails, uploadBlogCoverService } from '../Services/ApiServices';
+import Box from '@mui/material/Box';
+import Skeleton from '@mui/material/Skeleton';
+import {
+  addBlogService,
+  getAccountDetails,
+  getBlogsBySortingDetails,
+  uploadBlogCoverService,
+} from '../Services/ApiServices';
 import { getBlogsDetailsService } from '../_mock/blog';
 import Iconify from '../components/iconify';
 import { BlogPostCard, BlogPostsSearch, BlogPostsSort } from '../sections/@dashboard/blog';
@@ -18,9 +25,10 @@ import { BlogPostCard, BlogPostsSearch, BlogPostsSort } from '../sections/@dashb
 // ----------------------------------------------------------------------
 
 const SORT_OPTIONS = [
+  { value: 'all', label: 'All' },
   { value: 'latest', label: 'Latest' },
   { value: 'popular', label: 'Popular' },
-  { value: 'oldest', label: 'Oldest' },
+  { value: 'liked', label: 'Most Liked' },
 ];
 
 // ----------------------------------------------------------------------
@@ -71,6 +79,35 @@ export default function BlogPage() {
     setBlogInfo({ ...blogInfo, [e.target.name]: e.target.value });
   };
 
+  const [selectedOption, setSelectedOption] = useState(SORT_OPTIONS[0].value);
+  const handleSorting = async (event) => {
+    const newValue = event.target.value;
+    setSelectedOption(newValue);
+
+    const response = await getBlogsBySortingDetails(newValue);
+    if (response.status === 200) {
+      setBlogPost(response.data);
+    } else {
+      const blogDetails = await getBlogsDetailsService();
+      setBlogPost(blogDetails);
+      alert('Filter failed! Try again');
+    }
+  };
+
+  const handleSearchPost = async (blog) => {
+    if (!blog) {
+      const blogDetails = await getBlogsDetailsService();
+      setBlogPost(blogDetails);
+
+      return;
+    }
+
+    const blogs = [];
+    blogs.push(blog);
+
+    setBlogPost(blogs);
+  };
+
   const handleClick = async () => {
     try {
       const requestBody = {
@@ -80,14 +117,13 @@ export default function BlogPage() {
         cover: blogInfo.cover,
         content: blogInfo.content,
       };
-      const response = await addBlogService(requestBody);
-
-      const alertMessage = response.status === 200 ? 'Successfully added!' : 'Process failed! Try again';
-      alert(alertMessage);
+      await addBlogService(requestBody);
     } catch (error) {
       console.error('Error posting blog:', error);
       alert('Process failed! Try again');
     } finally {
+      const blogDetails = await getBlogsDetailsService();
+      setBlogPost(blogDetails);
       setOpen(false);
     }
   };
@@ -138,15 +174,23 @@ export default function BlogPage() {
         </Stack>
 
         <Stack mb={5} direction="row" alignItems="center" justifyContent="space-between">
-          <BlogPostsSearch posts={blogPost} />
-          <BlogPostsSort options={SORT_OPTIONS} />
+          <BlogPostsSearch posts={blogPost} onSearchPost={handleSearchPost} />
+          <BlogPostsSort options={SORT_OPTIONS} onSort={handleSorting} selectedOption={selectedOption} />
         </Stack>
 
-        <Grid container spacing={3}>
-          {blogPost.map((post, index) => (
-            <BlogPostCard key={post.blogid} post={post} index={index} />
-          ))}
-        </Grid>
+        {blogPost ? (
+          <Grid container spacing={3}>
+            {blogPost.map((post, index) => (
+              <BlogPostCard key={post.blogid} post={post} index={index} />
+            ))}
+          </Grid>
+        ) : (
+          <Box sx={{ pt: 0.5 }}>
+            <Skeleton variant="rectangular" width="50%" height={250} />
+            <Skeleton width="50%" />
+            <Skeleton width="40%" />
+          </Box>
+        )}
       </Container>
 
       <Dialog open={open} onClose={handleClose} aria-labelledby="responsive-dialog-title">

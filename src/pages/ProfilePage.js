@@ -32,21 +32,29 @@ export default function ProfilePage() {
     fetchData();
   }, []);
 
-  const uplodPhoto = async (event) => {
-    const selectedFile = event.target.files[0]; 
+  const uploadPhoto = async (event) => {
+    try {
+      const selectedFile = event.target.files?.[0]; // Safely access the first file
 
-    if (selectedFile) {
-      console.log('Selected file:', selectedFile);
+      if (!selectedFile) {
+        alert('No file selected.');
+        return;
+      }
 
       const formData = new FormData();
       formData.append('file', selectedFile);
 
       const response = await uploadProfilePhoto(profile.email, formData);
 
-      const alertMessage = response.status === 200 ? response.data.message : 'Upload failed! Try again';
-
-      alert(alertMessage);
-      // window.location.reload();
+      if (response?.status === 200) {
+        const accountDetails = await getAccountDetailsService();
+        setProfile(accountDetails); // Update the profile state
+      } else {
+        alert('Upload failed! Please try again.');
+      }
+    } catch (error) {
+      console.error('Error uploading photo:', error);
+      alert('An error occurred while uploading. Please try again.');
     }
   };
 
@@ -69,13 +77,8 @@ export default function ProfilePage() {
                     fluid
                     style={{ width: '150px', zIndex: '1', maxHeight: '155px', minHeight: '155px' }}
                   />
-                  <label className="btn btn-outline-secondary" style={{ zIndex: 1 }} htmlFor='fileInput'>
-                    <input
-                      type="file"
-                      style={{ display: 'none' }}
-                      id="fileInput" 
-                      onChange={e => uplodPhoto(e)}
-                    />
+                  <label className="btn btn-outline-secondary" style={{ zIndex: 1 }} htmlFor="fileInput">
+                    <input type="file" style={{ display: 'none' }} id="fileInput" onChange={(e) => uploadPhoto(e)} />
                     <Iconify icon={'mdi:camera'} className="icon" />
                     Upload Photo
                   </label>

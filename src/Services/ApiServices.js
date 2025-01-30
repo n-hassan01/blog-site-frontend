@@ -1,5 +1,5 @@
 import axios from 'axios';
-import getCookieService from "./GetCookieService";
+import getCookieService from './GetCookieService';
 
 const usersUrl = 'http://localhost:4000/';
 
@@ -29,8 +29,8 @@ export const getLoggedInUserDetails = async () => {
   try {
     return await axios.get(`${usersUrl}logged-user/`, {
       headers: {
-          Authorization: `Bearer ${cookie}`
-      }
+        Authorization: `Bearer ${cookie}`,
+      },
     });
   } catch (err) {
     console.log(err.message);
@@ -45,8 +45,8 @@ export const getAccountDetails = async () => {
   try {
     return await axios.get(`${usersUrl}account-info/`, {
       headers: {
-          Authorization: `Bearer ${cookie}`
-      }
+        Authorization: `Bearer ${cookie}`,
+      },
     });
   } catch (err) {
     console.log(err.message);
@@ -138,12 +138,12 @@ export const uploadBlogCoverService = async (bodyInfo) => {
 
 export const deleteUser = async (emailAddress) => {
   const cookie = getCookieService('jwt-token-cookie');
-  
+
   try {
     return await axios.delete(`${usersUrl}remove-user/${emailAddress}`, {
       headers: {
         Authorization: `Bearer ${cookie}`,
-      }
+      },
     });
   } catch (err) {
     console.log(err.message);
@@ -182,14 +182,24 @@ export const getBlogsDetails = async () => {
   }
 };
 
+export const getBlogsBySortingDetails = async (value) => {
+  try {
+    return await axios.get(`${usersUrl}blogs/${value}`);
+  } catch (err) {
+    console.log(err.message);
+
+    return err.message;
+  }
+};
+
 export const getReadCount = async (blogId) => {
   const cookie = getCookieService('jwt-token-cookie');
 
   try {
     return await axios.get(`${usersUrl}read-count/${blogId}`, {
       headers: {
-          Authorization: `Bearer ${cookie}`
-      }
+        Authorization: `Bearer ${cookie}`,
+      },
     });
   } catch (err) {
     console.log(err.message);
@@ -203,11 +213,15 @@ export const addBlogReadService = async (blogId) => {
   console.log(cookie);
 
   try {
-    return await axios.post(`${usersUrl}read-blog/${blogId}`, {}, {
-      headers: {
-          Authorization: `Bearer ${cookie}`
+    return await axios.post(
+      `${usersUrl}read-blog/${blogId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${cookie}`,
+        },
       }
-    });
+    );
   } catch (err) {
     console.log(err.message);
 
@@ -219,11 +233,15 @@ export const likeBlogService = async (blogId) => {
   const cookie = getCookieService('jwt-token-cookie');
 
   try {
-    return await axios.post(`${usersUrl}like-blog/${blogId}`, {}, {
-      headers: {
-          Authorization: `Bearer ${cookie}`
+    return await axios.post(
+      `${usersUrl}like-blog/${blogId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${cookie}`,
+        },
       }
-    });
+    );
   } catch (err) {
     console.log(err.message);
 
@@ -237,8 +255,8 @@ export const getLikedBlogDetails = async (blogId) => {
   try {
     return await axios.get(`${usersUrl}like-stat/${blogId}`, {
       headers: {
-          Authorization: `Bearer ${cookie}`
-      }
+        Authorization: `Bearer ${cookie}`,
+      },
     });
   } catch (err) {
     console.log(err.message);
@@ -253,8 +271,8 @@ export const getLikeCount = async (blogId) => {
   try {
     return await axios.get(`${usersUrl}like-count/${blogId}`, {
       headers: {
-          Authorization: `Bearer ${cookie}`
-      }
+        Authorization: `Bearer ${cookie}`,
+      },
     });
   } catch (err) {
     console.log(err.message);
